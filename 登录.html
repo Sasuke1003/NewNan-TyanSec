@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>登入介面</title>
+		<style type="text/css">
+			.main{
+				margin: 0 auto;
+				padding: 10px;
+				width: 250px;
+				height: 200px;
+				background: cornflowerblue;
+			}
+			.leftbar{
+				width: 30%;
+				padding-bottom: 15px;
+				display: inline-block;
+				text-align: right;
+			}
+			.bottom{
+				padding-bottom: 15px;
+			}
+		</style>
+	</head>
+	<body>
+		
+		<form action="登入驗證.php" method="post">
+			
+			<div id="main" class="main">
+				<h3>
+					請輸入使用者名稱
+				</h3>
+				<div>
+					<label><div class="leftbar">使用者名稱：</div><input type="text" name="userName" /></label>
+					<label><div class="leftbar">密碼：</div><input type="text" name="userPassword" /></label>
+				</div>
+				<div class="bottom">
+					<div class="leftbar"></div><input type="radio" name="remmber"  />記住我一週
+				</div>
+				<div class="bottom">
+					<div class="leftbar"></div><input type="submit" name="submit" value="登入" />
+				</div>
+				
+			</div>
+			
+		</form>	
+	</body>
+</html>
+
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>登入驗證</title>
+		<style type="text/css">
+			.main{
+				margin: 0 auto;
+				width: 350px;
+				height: 100px;
+				background: cornflowerblue;
+				padding: 20px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="main">
+			<?php
+
+				$name=$_POST['userName'];
+				$password=$_POST['userPassword'];
+
+                if($name==null||$password==null){
+					header("location:登入.html");//直接開啟該php檔案，跳轉到登入介面
+				}
+				
+				
+//				require_once('登入驗證資料庫連線.php');
+//				$db=new connectDB();
+//				$db->getConn();
+			
+					[email protected] mysqli('127.0.0.1','root','123456');
+					if ($db->connect_error)
+					 die('連結錯誤: '. $db->connect_error);
+					$db->select_db('實驗五第二題資料庫') or die('不能連線資料庫');
+			
+					$sql='SELECT * FROM 使用者登入表 WHERE name='."'{$name}'AND psw="."'$password';";
+					$result=$db->query($sql);
+					$num_users=$result->num_rows;//在資料庫中搜索到符合的使用者
+					if($num_users!=0){//搜尋到該使用者
+						echo "<h3>歡迎您&nbsp{$name}</h3>";
+						echo "您上次的登入時間是：";
+						$sqlTime='SELECT time FROM 使用者登入表 WHERE name='."'{$name}';";
+						$resultTime=$db->query($sqlTime);
+						while($obj=$resultTime->fetch_object()){
+							echo "{$obj->time}";
+						}
+						$sqlUpdate='UPDATE 使用者登入表 SET time="'.date('y-m-d h:i:s',time()).'" WHERE name='."'{$name}';";
+						$db->query($sqlUpdate);//更新登陸時間
+					}
+					else{
+						echo "使用者名稱或密碼錯誤";
+					}
+			?>
+		</div>
+	</body>
+</html>
